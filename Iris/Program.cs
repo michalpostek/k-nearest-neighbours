@@ -1,5 +1,7 @@
-﻿using Iris;
+﻿using System.Globalization;
+using Iris;
 using KNearestNeighbours;
+using Spectre.Console;
 
 var data = IrisDataReader.ReadData();
 var normalizedData = TrainingDataNormalizer.Normalize(data);
@@ -42,16 +44,19 @@ for (var k = kFrom; k < kTo; k++)
     }
 }
 
+var table = new Table();
+table.AddColumn("Metryka");
+table.AddColumn("k");
+table.AddColumn("Dokładność (%)");
+
 results.Sort((x, y) => y.precision.CompareTo(x.precision));
-
-Console.WriteLine($"{"Metryka",-30}{"k",-5}{"Dokładność",-15}");
-Console.WriteLine(new string('-', 50));
-
 results.ForEach(result =>
 {
-    Console.WriteLine(
-        $"{result.metric,-30}" +
-        $"{result.k,-5}" +
-        $"{Math.Round(result.precision * 100, 2) + "%",-15}"
+    table.AddRow(
+        result.metric, 
+        result.k.ToString(), 
+        Math.Round(result.precision * 100, 2).ToString(CultureInfo.CurrentCulture)
     );
 });
+
+AnsiConsole.Write(table);
