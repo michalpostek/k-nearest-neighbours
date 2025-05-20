@@ -1,24 +1,24 @@
 ﻿namespace KNearestNeighbours;
 
-public static class KNearestNeighbours<TClass> where TClass : struct, Enum 
+public static class KNearestNeighbours<TLabel> where TLabel : struct, Enum 
 {
-    public static TClass? Classify(double[] obj, List<Tuple<double[], TClass>> trainingData, int k, Func<double[], double[], double> distanceMetric) 
+    public static TLabel? Classify(double[] obj, List<Tuple<double[], TLabel>> trainingData, int k, Func<double[], double[], double> distanceMetric) 
     {
         if (k < 1)
         {
             throw new ArgumentException("K must be greater than zero");
         }
 
-        var trainingDataByClass = GroupTrainingData(trainingData);
+        var trainingDataByLabel = GroupTrainingData(trainingData);
 
-        if (trainingDataByClass.Keys.Any(key => trainingDataByClass[key].Length < k))
+        if (trainingDataByLabel.Keys.Any(label => trainingDataByLabel[label].Length < k))
         {
             throw new ArgumentException("The training data does not contain enough neighbours for at least one class");
         }
         
-        var totalDistanceByClass = trainingDataByClass.ToDictionary(kvp => kvp.Key, kvp => SumKNearestNeighbourDistances(obj, kvp.Value, distanceMetric, k));
+        var resultByLabel = trainingDataByLabel.ToDictionary((kvp) => kvp.Key, kvp => SumKNearestNeighbourDistances(obj, kvp.Value, distanceMetric, k));
 
-        return TryGetUniqueMinKey(totalDistanceByClass);
+        return TryGetUniqueMinKey(resultByLabel);
     }
 
     private static double SumKNearestNeighbourDistances(double[] obj, double[][] neighbours, Func<double[], double[], double> distanceMetric, int k)
@@ -26,14 +26,14 @@ public static class KNearestNeighbours<TClass> where TClass : struct, Enum
         return neighbours.Select(neighbour => distanceMetric(neighbour, obj)).OrderBy(distance => distance).Take(k).Sum();
     }
 
-    private static Dictionary<TClass, double[][]> GroupTrainingData(List<Tuple<double[], TClass>> trainingData)
+    private static Dictionary<TLabel, double[][]> GroupTrainingData(List<Tuple<double[], TLabel>> trainingData)
     {
         return trainingData
             .GroupBy(sample => sample.Item2)
             .ToDictionary(group => group.Key, group => group.Select(sample => sample.Item1).ToArray());
     } 
     
-    private static TClass? TryGetUniqueMinKey(Dictionary<TClass, double> dict)
+    private static TLabel? TryGetUniqueMinKey(Dictionary<TLabel, double> dict)
     {
         if (dict.Count == 0)
         {

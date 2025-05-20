@@ -1,6 +1,6 @@
 ﻿namespace Iris;
 
-public enum IrisClass
+public enum IrisLabel
 {
     First = 1,
     Second = 2,
