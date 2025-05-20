@@ -20,7 +20,7 @@ var results = new List<(string metric, int k, double precision)>();
 
 for (var k = kFrom; k < kTo; k++)
 {
-    foreach (var metric in distanceMetrics.Values)
+    foreach (var (key, metric) in distanceMetrics)
     {
         var incorrectClassifications = 0;
 
@@ -38,7 +38,7 @@ for (var k = kFrom; k < kTo; k++)
             }
         }
         
-        results.Add((metric.Method.Name, k, 1 - incorrectClassifications / (double)normalizedData.Count));
+        results.Add((key, k, 1 - incorrectClassifications / (double)normalizedData.Count));
     }
 }
 
