@@ -3,18 +3,24 @@ using KNearestNeighbours;
 
 var data = IrisDataReader.ReadData();
 var normalizedData = TrainingDataNormalizer.Normalize(data);
-var distanceMetrics = new List<Func<double[], double[], double>>
+
+const int kFrom = 1;
+const int kTo = 20;
+const int minkowskiP = 3;
+
+var distanceMetrics = new Dictionary<string, Func<double[], double[], double>>
 {
-    DistanceMetrics.ChebyshevDistance,
-    DistanceMetrics.ManhattanDistance,
-    DistanceMetrics.EuclideanDistance,
-    DistanceMetrics.LogarithmicDistance
+    { nameof(DistanceMetrics.MinkowskiDistance), (double[] from, double[] to) => DistanceMetrics.MinkowskiDistance(from, to, minkowskiP) },
+    { nameof(DistanceMetrics.ChebyshevDistance), DistanceMetrics.ChebyshevDistance },
+    { nameof(DistanceMetrics.ManhattanDistance), DistanceMetrics.ManhattanDistance },
+    { nameof(DistanceMetrics.EuclideanDistance), DistanceMetrics.ChebyshevDistance },
+    { nameof(DistanceMetrics.LogarithmicDistance), DistanceMetrics.LogarithmicDistance },
 };
 var results = new List<(string metric, int k, double precision)>();
 
-for (var k = 1; k < 20; k++)
+for (var k = kFrom; k < kTo; k++)
 {
-    distanceMetrics.ForEach(metric =>
+    foreach (var metric in distanceMetrics.Values)
     {
         var incorrectClassifications = 0;
 
@@ -33,7 +39,7 @@ for (var k = 1; k < 20; k++)
         }
         
         results.Add((metric.Method.Name, k, 1 - incorrectClassifications / (double)normalizedData.Count));
-    });
+    }
 }
 
 results.Sort((x, y) => y.precision.CompareTo(x.precision));
