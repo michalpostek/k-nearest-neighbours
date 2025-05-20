@@ -30,7 +30,7 @@ for (var k = kFrom; k < kTo; k++)
             var currentSample = normalizedData[currentSampleIndex];
             var currentTrainingData = normalizedData.Where((_, index) => index != currentSampleIndex).ToList();
 
-            var result = KNearestNeighbours<IrisClass>.Classify(currentSample.Item1, currentTrainingData, k, metric);
+            var result = KNearestNeighbours<IrisLabel>.Classify(currentSample.Item1, currentTrainingData, k, metric);
 
             if (result != currentSample.Item2)
             {
