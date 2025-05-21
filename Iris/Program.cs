@@ -12,7 +12,7 @@ const int minkowskiP = 3;
 
 var distanceMetrics = new Dictionary<string, Func<double[], double[], double>>
 {
-    { nameof(DistanceMetrics.MinkowskiDistance), (double[] from, double[] to) => DistanceMetrics.MinkowskiDistance(from, to, minkowskiP) },
+    { $"{nameof(DistanceMetrics.MinkowskiDistance)} (p = {minkowskiP})", (double[] from, double[] to) => DistanceMetrics.MinkowskiDistance(from, to, minkowskiP) },
     { nameof(DistanceMetrics.ChebyshevDistance), DistanceMetrics.ChebyshevDistance },
     { nameof(DistanceMetrics.ManhattanDistance), DistanceMetrics.ManhattanDistance },
     { nameof(DistanceMetrics.EuclideanDistance), DistanceMetrics.ChebyshevDistance },
